@@ -1,0 +1,4 @@
+title: My Site
+theme: jekyll-theme-primer
+sass:
+  sass_dir: assets/css
