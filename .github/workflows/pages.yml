@@ -1,5 +1,5 @@
-# .github/workflows/pages.yml
-name: Build & Deploy to Pages
+name: Deploy to GitHub Pages
+
 on:
   push:
     branches: [ main ]
@@ -11,30 +11,24 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true  # ensures only the latest run proceeds
+  cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
-      - run: |
-          bundle add github-pages --version "~> 232" || true
-          bundle exec jekyll build --source docs --destination docs/_site --trace
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/_site
-
   deploy:
-    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
-    runs-on: ubuntu-latest
+      url: ${{ steps.deploy.outputs.page_url }}
+
     steps:
-      - id: deployment
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      # Upload your static site. Change this if your site is elsewhere.
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - id: deploy
         uses: actions/deploy-pages@v4
